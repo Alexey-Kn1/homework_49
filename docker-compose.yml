@@ -1,0 +1,35 @@
+services:
+  app:
+    image: app
+    ports:
+      - "8080:8080"
+    networks:
+      - local_network
+    hostname: "app"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./configs/prometheus/config.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - local_network
+    depends_on:
+      - app
+    hostname: "prometheus"
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    networks:
+      - local_network
+    volumes:
+      - ./configs/grafana/:/etc/grafana
+
+networks:
+  local_network:
+    driver: bridge
